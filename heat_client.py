@@ -38,7 +38,7 @@ class HeatClient():
         self.stack_list = []
         self.auth_token = self.get_auth_token()
         self.floating_ip = None
-        self.floating_ip = '192.168.1.28'#self.get_floating_ip()
+        self.floating_ip = self.get_floating_ip()
 
     def get_stack_list(self):
         if self.stack_manager is None:
@@ -64,9 +64,9 @@ class HeatClient():
         return token
 
     def get_stack_id(self):
-#        if self.stack_id is None:
-            #self.stack_id = open('/home/ubuntu/stackid', 'r').read().rstrip() 
-        return None#self.stack_id
+        if self.stack_id is None:
+            self.stack_id = open('/home/ubuntu/stackid', 'r').read().rstrip() 
+        return self.stack_id
 
     def get_floating_ip(self):
         if self.floating_ip is None:
