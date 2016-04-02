@@ -4,7 +4,10 @@ Tstart=$(date +%s%3N)
 #compress and send with one command
 #ssh -i /home/ubuntu/key/mcn-key.pem ubuntu@ip_old 'cd /var/lib/influxdb; sudo tar zcvf - data hh wal meta' > influxdb.backup.tar.gz
 
-oldfloatingip=$(<../influxdb_oldip)
+if [ "$1" == "" ]; then
+   oldfloatingip=$(<../influxdb_oldip)
+else oldfloatingip=$1
+fi
 echo $oldfloatingip
 
 #compress data
