@@ -12,11 +12,15 @@ import sys
 
 #For monitoring purpose
 import time
+import paramiko
 
 zabbix_url='http://137.204.57.236:8008/zabbix/'
 zabbix_user='azanni'
 zabbix_pass='azanni'
 trigger_value=0.5
+
+user = 'ubuntu'
+key = '/home/ubuntu/key/mcn-key.pem'
 
 class MyList(list):
     def append(self, item):
@@ -40,6 +44,19 @@ def moveVM():
     stack = co_new.create_stack()
     print "stack_new: ", stack
     #stack_new = heat.stacks.get(stack_id=uid).to_dict()
+
+    stack_new = heat.stacks.get(stack_id=uid).to_dict()
+    print stack_new
+
+    current_ip = '160.85.4.61'
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(current_ip, username=user, key_filename=key)
+    command = 'bash /home/ubuntu/greyModel_noCluster/database_config.sh ' + current_ip
+    stdin, stdout, stderr = ssh.exec_command(command)
+    print "", stdout.readlines()
+    ssh.close()
+
 
 #    TODO:
 #   while not  fine migrazione:
