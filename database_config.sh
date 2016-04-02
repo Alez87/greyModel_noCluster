@@ -4,13 +4,16 @@ Tstart=$(date +%s%3N)
 #compress and send with one command
 #ssh -i /home/ubuntu/key/mcn-key.pem ubuntu@ip_old 'cd /var/lib/influxdb; sudo tar zcvf - data hh wal meta' > influxdb.backup.tar.gz
 
+oldfloatingip=$(<../influxdb_oldip)
+echo $oldfloatingip
+
 #compress data
 Tcompress_start=$(date +%s%3N)
-ssh -y -i /home/ubuntu/key/mcn-key.pem ubuntu@160.85.4.59 'cd /var/lib/influxdb; sudo tar -zcvf /home/ubuntu/influxdb.backup.tar.gz data hh wal meta'
+ssh -y -i /home/ubuntu/key/mcn-key.pem ubuntu@$oldfloatingip 'cd /var/lib/influxdb; sudo tar -zcvf /home/ubuntu/influxdb.backup.tar.gz data hh wal meta'
 Tcompress_end=$(date +%s%3N)
 #send data
 Tmove_start=$(date +%s%3N)
-scp -oStrictHostKeyChecking=no -i /home/ubuntu/key/mcn-key.pem ubuntu@160.85.4.59:/home/ubuntu/influxdb.backup.tar.gz /home/ubuntu/
+scp -oStrictHostKeyChecking=no -i /home/ubuntu/key/mcn-key.pem ubuntu@$oldfloatingip:/home/ubuntu/influxdb.backup.tar.gz /home/ubuntu/
 Tmove_end=$(date +%s%3N)
 #remove data folders
 rm -rf /var/lib/influxdb/*
