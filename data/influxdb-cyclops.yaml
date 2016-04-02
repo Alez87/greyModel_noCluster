@@ -131,15 +131,6 @@ resources:
               Tstart=$(date +%s%3N)
               rm /home/ubuntu/stackid
               rm /home/ubuntu/authtoken
-#              echo influxdb_ip_new >> /home/ubuntu/influxdb_floatingip
-#              cd /home/ubuntu/influxdb_cluster_configuration
-#              influxdb_ip_old = ip_old
-#              Tconfig_start=$(date +%s%3N)
-#              if [$influxdb_ip_old == ""]; then
-#                  bash cluster_config.sh
-#              else
-#                  bash cluster_config.sh ip_old
-#              fi
               echo stack_id >> /home/ubuntu/stackid
               source /home/ubuntu/bart_auth
               keystone token-get | grep -w "id" | awk '{print $4}' >> /home/ubuntu/authtoken
@@ -147,7 +138,7 @@ resources:
 
               #compress and send with one command
               #ssh -i /home/ubuntu/key/mcn-key.pem ubuntu@ip_old 'cd /var/lib/influxdb; sudo tar zcvf - data hh wal meta' > influxdb.backup.tar.gz
-              
+
               #compress data
               Tcompress_start=$(date +%s%3N)
               ssh -i /home/ubuntu/key/mcn-key.pem ubuntu@ip_old 'cd /var/lib/influxdb; sudo tar -zcvf influxdb.backup.tar.gz data hh wal meta'
@@ -166,9 +157,9 @@ resources:
               #restart database
               Trestart_start=$(date +%s%3N)
               service influxdb restart
-              Textract_end=$(date +%s%3N)
+              Trestart_end=$(date +%s%3N)
               Tend=$(date +%s%3N)
-              
+
               Tconfig=$(((Tconfig-Tstart)/1000))
               Tcompress=$(((Tcompress_end-Tcompress_start)/1000))
               Tmove=$(((Tmove_end-Tmove_start)/1000))
