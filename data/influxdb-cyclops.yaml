@@ -144,17 +144,23 @@ resources:
               source /home/ubuntu/bart_auth
               keystone token-get | grep -w "id" | awk '{print $4}' >> /home/ubuntu/authtoken
               Tconfig_end=$(date +%s%3N)
+
+              #compress and send with one command
+              #ssh -i /home/ubuntu/key/mcn-key.pem ubuntu@ip_old 'cd /var/lib/influxdb; sudo tar zcvf - data hh wal meta' > influxdb.backup.tar.gz
               
-              #create archive and send data
+              #compress data
+              Tcompress_start=$(date +%s%3N)
+              ssh -i /home/ubuntu/key/mcn-key.pem ubuntu@ip_old 'cd /var/lib/influxdb; sudo tar -zcvf influxdb.backup.tar.gz data hh wal meta'
+              Tcompress_end=$(date +%s%3N)
+              #send data
               Tmove_start=$(date +%s%3N)
-              #scp -i /home/ubuntu/key/mcn-key.pem ubuntu@ip_old:/home/ubuntu/influxdb.backup.tar /home/ubuntu/
-              cd /home/ubuntu
-              ssh -i /home/ubuntu/key/mcn-key.pem ubuntu@ip_old 'cd /var/lib/influxdb; sudo tar zcvf - data hh wal meta' > influxdb.backup.tar.gz
+              scp -i /home/ubuntu/key/mcn-key.pem ubuntu@ip_old:/home/ubuntu/influxdb.backup.tar.gz /home/ubuntu/
               Tmove_end=$(date +%s%3N)
               #remove data folders
               rm -rf /var/lib/influxdb/*
-              #extract tar
+              #extract data
               Textract_start=$(date +%s%3N)
+              cd /home/ubuntu
               tar -zxvf influxdb.backup.tar.gz -C  /var/lib/influxdb
               Textract_end=$(date +%s%3N)
               #restart database
@@ -164,11 +170,13 @@ resources:
               Tend=$(date +%s%3N)
               
               Tconfig=$(((Tconfig-Tstart)/1000))
+              Tcompress=$(((Tcompress_end-Tcompress_start)/1000))
               Tmove=$(((Tmove_end-Tmove_start)/1000))
               Textract=$(((Textract_end-Textract_start)/1000))
               Trestart=$(((Trestart_end-Trestart_start)/1000))
               Ttotal=$(((Tend-Tstart)/1000))
               echo "Time to config: " $Tconfig >> /home/ubuntu/times_influxdb
+              echo "Time to compress data: " $Tcompress >> /home/ubuntu/times_influxdb
               echo "Time to move data: " $Tmove >> /home/ubuntu/times_influxdb
               echo "Time to extract data: " $Textract >> /home/ubuntu/times_influxdb
               echo "Time total: " $Ttotal >> /home/ubuntu/times_influxdb
