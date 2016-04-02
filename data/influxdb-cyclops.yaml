@@ -147,7 +147,7 @@ resources:
               Tcompress_end=$(date +%s%3N)
               #send data
               Tmove_start=$(date +%s%3N)
-              scp -y -i /home/ubuntu/key/mcn-key.pem ubuntu@ip_old:/home/ubuntu/influxdb.backup.tar.gz /home/ubuntu/
+              scp -oStrictHostKeyChecking=no -i /home/ubuntu/key/mcn-key.pem ubuntu@ip_old:/home/ubuntu/influxdb.backup.tar.gz /home/ubuntu/
               Tmove_end=$(date +%s%3N)
               #remove data folders
               rm -rf /var/lib/influxdb/*
