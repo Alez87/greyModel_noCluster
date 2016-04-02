@@ -172,7 +172,7 @@ resources:
               echo "Time to extract data: " $Textract >> /home/ubuntu/times_influxdb
               echo "Time total: " $Ttotal >> /home/ubuntu/times_influxdb
               #TODO:
-#              cd greyModel
+              #cd greyModel_noCluster
               #sh services_orchestration.sh
             params:
               stack_id: { get_param: "OS::stack_id"}
