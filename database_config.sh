@@ -12,7 +12,7 @@ echo $oldfloatingip
 
 #compress data
 Tcompress_start=$(date +%s%3N)
-ssh -y -i /home/ubuntu/key/mcn-key.pem ubuntu@$oldfloatingip 'cd /var/lib/influxdb; sudo tar -cf /home/ubuntu/influxdb.backup.tar meta data hh wal'
+ssh -oStrictHostKeyChecking=no -i /home/ubuntu/key/mcn-key.pem ubuntu@$oldfloatingip 'cd /var/lib/influxdb; sudo tar -cf /home/ubuntu/influxdb.backup.tar meta data hh wal'
 Tcompress_end=$(date +%s%3N)
 #send data
 Tmove_start=$(date +%s%3N)
