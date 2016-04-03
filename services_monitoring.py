@@ -45,22 +45,27 @@ def moveVM():
     print "stack_new: ", stack
     #stack_new = heat.stacks.get(stack_id=uid).to_dict()
 
-    stack_new = heat.stacks.get(stack_id=uid).to_dict()
-    print stack_new
+    old_ip=co_old.get_floating_ip()
+    new_ip=co_new.get_floating_ip()
+    print "old VM ip: ", old_ip
+    print "new VM ip: ", new_ip
 
-    current_ip = '160.85.4.61'
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(current_ip, username=user, key_filename=key)
-    command = 'bash /home/ubuntu/greyModel_noCluster/database_config.sh ' + current_ip
-    stdin, stdout, stderr = ssh.exec_command(command)
-    print "", stdout.readlines()
-    ssh.close()
-
+    if not old_ip or not new_ip:
+        print "Cannot move data. Missing IP"
+        print "old VM ip: ", old_ip
+        print "new VM ip: ", new_ip
+    else:
+        print "I'm moving data..."
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(new_ip, username=user, key_filename=key)
+        command = 'bash /home/ubuntu/greyModel_noCluster/database_config.sh ' + old_ip
+        stdin, stdout, stderr = ssh.exec_command(command)
+        print "Script output", stdout.readlines()
+        ssh.close()
+        print "Data moved"
 
 #    TODO:
-#   while not  fine migrazione:
-#        continuo a copiare dati
 #   co_old.delete_stack()
 #   new influxDB-VM config -> to master
     migrationVM = False
