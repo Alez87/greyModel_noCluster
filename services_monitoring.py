@@ -19,9 +19,6 @@ zabbix_user='azanni'
 zabbix_pass='azanni'
 trigger_value=0.5
 
-user = 'ubuntu'
-key = '/home/ubuntu/key/mcn-key.pem'
-
 class MyList(list):
     def append(self, item):
         list.append(self, item)        
@@ -45,8 +42,9 @@ def moveVM():
     print "stack_new: ", stack
     #stack_new = heat.stacks.get(stack_id=uid).to_dict()
 
-    old_ip=co_old.get_floating_ip()
-    new_ip=co_new.get_floating_ip()
+    old_ip=stack['parameters']['influxdb_floating_ip_old']
+    new_ip_raw=stack['outputs'][0]['output_value']
+    new_ip=re.findall( r'[0-9]+(?:\.[0-9]+){3}', new_ip_raw)[0]
     print "old VM ip: ", old_ip
     print "new VM ip: ", new_ip
 
@@ -58,7 +56,7 @@ def moveVM():
         print "I'm moving data..."
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(new_ip, username=user, key_filename=key)
+        ssh.connect(new_ip, username='ubuntu', key_filename='/home/ubuntu/key/mcn-key.pem')
         command = 'bash /home/ubuntu/greyModel_noCluster/database_config.sh ' + old_ip
         stdin, stdout, stderr = ssh.exec_command(command)
         print "Script output", stdout.readlines()
