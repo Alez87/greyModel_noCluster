@@ -11,12 +11,16 @@ fi
 echo $oldfloatingip
 
 #compress data
-Tcompress_start=$(date +%s%3N)
-ssh -oStrictHostKeyChecking=no -i /home/ubuntu/key/mcn-key.pem ubuntu@$oldfloatingip 'cd /var/lib/influxdb; sudo tar -cf /home/ubuntu/influxdb.backup.tar meta data hh wal'
-Tcompress_end=$(date +%s%3N)
+#Tcompress_start=$(date +%s%3N)
+#ssh -oStrictHostKeyChecking=no -i /home/ubuntu/key/mcn-key.pem ubuntu@$oldfloatingip 'cd /var/lib/influxdb; sudo tar -cf /home/ubuntu/influxdb.backup.tar meta data hh wal'
+#Tcompress_end=$(date +%s%3N)
+
+sudo rm /home/ubuntu/influxdb.backup.tar.gz
 #send data
 Tmove_start=$(date +%s%3N)
-scp -oStrictHostKeyChecking=no -i /home/ubuntu/key/mcn-key.pem ubuntu@$oldfloatingip:/home/ubuntu/influxdb.backup.tar /home/ubuntu/
+#scp -oStrictHostKeyChecking=no -i /home/ubuntu/key/mcn-key.pem ubuntu@$oldfloatingip:/home/ubuntu/influxdb.backup.tar /home/ubuntu/
+ssh -oStrictHostKeyChecking=no -i /home/ubuntu/key/mcn-key.pem ubuntu@$oldfloatingip 'cd /var/lib/influxdb; sudo tar zcf - data hh wal meta' > /home/ubuntu/influxdb.backup.tar.gz
+
 Tmove_end=$(date +%s%3N)
 #remove data folders
 echo "cancello i dati"
@@ -40,7 +44,7 @@ Trestart=$(((Trestart_end-Trestart_start)/1000))
 Ttotal=$(((Tend-Tstart)/1000))
 
 sudo rm /home/ubuntu/times_influxdb
-sudo echo "Time to compress data: " $Tcompress >> /home/ubuntu/times_influxdb
+#sudo echo "Time to compress data: " $Tcompress >> /home/ubuntu/times_influxdb
 sudo echo "Time to move data: " $Tmove >> /home/ubuntu/times_influxdb
 sudo echo "Time to extract data: " $Textract >> /home/ubuntu/times_influxdb
 sudo echo "Time to restart data: " $Trestart >> /home/ubuntu/times_influxdb
