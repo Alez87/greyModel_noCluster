@@ -40,8 +40,7 @@ def moveVM():
     co_new = HeatClient(region_new)
     stack = co_new.create_stack()
     print "stack_new: ", stack
-    #stack_new = heat.stacks.get(stack_id=uid).to_dict()
-
+   
     old_ip=stack['parameters']['influxdb_floating_ip_old']
     new_ip_raw=stack['outputs'][0]['output_value']
     new_ip=re.findall( r'[0-9]+(?:\.[0-9]+){3}', new_ip_raw)[0]
@@ -65,11 +64,9 @@ def moveVM():
 
 #    TODO:
 #   co_old.delete_stack()
-#   new influxDB-VM config -> to master
     migrationVM = False
 
 Tstart=time.time()
-
 migrationVM = False
 gateway = JavaGateway()
 connector = APIConnector()
@@ -122,9 +119,7 @@ while True:
             print "Trigger activated. I'm going to move the VM state."
             try:
                 Tmovetot_start=time.time()
-
                 moveVM()
-
                 Tmovetot=time.time()-Tmovetot_start
                 print "Total time to migrate the VMs: ", Tmovetot, "s"
             except:
